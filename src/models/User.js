@@ -6,7 +6,28 @@ const UserSchema = mongoose.Schema({
         required: true,
         trim: true
     },
+    last_name:{
+        type: String,
+        required: true,
+        trim: true
+    },
+    country:{
+        type: String,
+        required: true,
+        trim: true
+    },
+    age:{
+        type: Number,
+        required: true,
+        trim: true
+    },
     email:{
+        type: String,
+        required: true,
+        trim: true,
+        unique: true
+    },
+    username:{
         type: String,
         required: true,
         trim: true,
@@ -17,14 +38,12 @@ const UserSchema = mongoose.Schema({
         required: true,
         trim: true
     },
-    tasks:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Task"
-    }],
     created_at: {
         type: Date,
         default: Date.now()
     }
 });
 
-module.exports = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', UserSchema);
+
+module.exports = User;
