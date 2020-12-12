@@ -1,31 +1,33 @@
-const User = require('../models/User');
-const bcryptjs = require('bcryptjs');
+const User = require('../models/user');
 const {validationResult} = require('express-validator');
 
 const userCtrl = {};
 
-userCtrl.createUser = async (req,res) =>{
-    console.log("entra createUser");
+userCtrl.createUser = async (req,res) => {
+    console.log("- entra createUser");
+    console.log(req.body);
 
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         return res.status(400).json({errors: errors.array()})
     }
 
-    const {email, username, password} = req.body;
+    const {name, last_name, country, age, email, username, password} = req.body;
     try{
-        let user = await User.findOne({email}) || User.findOne({username});
+        // let user = await (User.findOne({email}) || User.findOne({username}));
+        let newUser = await User.findOne({email});
+        console.log("Esta en la db?" + newUser);
 
-        if(user){ 
+        if(newUser){ 
             return res.status(400).json({msg:'Este usuario ya existe'});
         }
-        user = new User(req.body);
-
-        const salt = await bcryptjs.genSalt(10);
-        user.password = await bcryptjs.hash(password,salt);
+        newUser = new User(req.body);
+        console.log(newUser);
+        
+        newUser.password = await newUser.encryptPassword(newUser.password);
 
         // Guardar en la DB
-        await user.save();
+        await newUser.save();
         res.json({
             msg:'Usuario creado correctamente'
         });
@@ -37,23 +39,40 @@ userCtrl.createUser = async (req,res) =>{
     }
 }
 
-userCtrl.getUsers = async (req,res) =>{
+userCtrl.getUsers = async (req,res) => {
     await User.find({},function(err,users){
         if(!err){
-            if(users.length != 0){
-                res.status(200).send(users);
+            if(users.length != 0) {
+                // console.log(users);
+                // console.log(typeof users);
+                const arrayUsers = [];
+                users.forEach(eachUser => {
+                    let user = {
+                        id:         eachUser.id,
+                        name:       eachUser.name,
+                        last_name:  eachUser.last_name,
+                        country:    eachUser.country,
+                        age:        eachUser.age,
+                        email:      eachUser.email,
+                        username:   eachUser.username,
+                        userActive:   eachUser.userActive
+                    }
+                    arrayUsers.push(user);
+                });
+                res.status(200).send(arrayUsers);
             }
-            else{
+            else {
                 res.status(400).json({msg:"No existen usuarios"});
             }
         }
         else{
             console.log(err);
         }
-    }).populate("tasks");
+    });
+    // }).populate("tasks");
 }
 
-userCtrl.findUser = (req,res) => {
+userCtrl.getUserById = (req,res) => {
     const id = req.params.id;
     User.findById(id)
         .then(data => {

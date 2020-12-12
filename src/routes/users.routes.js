@@ -5,10 +5,11 @@ const userCtrl = require('../controllers/user.controller');
 const {
     createUser,
     getUsers,
-    findUser,
+    // getUser,
+    getUserById,
     deleteUser,
-    updateUser,
-    deleteAllUsers
+    updateUser
+    // ,deleteAllUsers
 } = userCtrl;
 
 const router = express.Router();
@@ -16,22 +17,28 @@ const router = express.Router();
 //Alta de Usuarios
 //Obtener Usuarios
 //Borrado masivo de usuarios
-router.route('/users/')
+router.route('/')
     .post([
         check('name','El nombre es obligatorio!').not().isEmpty(),
+        check('last_name','El apellido es obligatorio!').not().isEmpty(),
+        check('country','El país es obligatorio!').not().isEmpty(),
+        check('age','Su edad es obligatoria!').not().isEmpty(),
         check('email','El email es obligatorio!').not().isEmpty(),
         check('email','Debe ser formato email!').isEmail(),
+        check('username','Debe agregar un nombre de usuario').not().isEmpty(),
+        check('username','El nombre de usuario debe tener como mínimo 3 caracteres').isLength({min:3}),
         check('password','Debe agregar la contraseña').notEmpty(),
-        check('password','El password debe ser de un minimo de 6 caracteres').isLength({min:6})
+        check('password','El password debe debe tener como mínimo de 6 caracteres').isLength({min:6})
     ],createUser)
-    .get(getUsers)
-    .delete(deleteAllUsers);
+    // .delete(deleteAllUsers)
+    .get(getUsers);
 
 //Trear 1 usuario por id
 //Borrar un usuario con el id
 //Actualizar Usuario
-router.route('/user/:id')
-    .get(findUser)
+router.route('/id/:id')
+    // .get(getUser)
+    .get(getUserById)
     .delete(deleteUser)
     .put(updateUser);
 
