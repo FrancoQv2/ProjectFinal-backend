@@ -26,9 +26,8 @@ userCtrl.createUser = async (req,res) => {
         
         newUser.password = await newUser.encryptPassword(newUser.password);
 
-        // Guardar en la DB
         await newUser.save();
-        res.json({
+        res.status(201).json({
             msg:'Usuario creado correctamente'
         });
     }catch(error){
@@ -55,14 +54,17 @@ userCtrl.getUsers = async (req,res) => {
                         age:        eachUser.age,
                         email:      eachUser.email,
                         username:   eachUser.username,
-                        userActive:   eachUser.userActive
+                        userActive:   eachUser.userActive,
+                        userDeleted:   eachUser.userDeleted
                     }
                     arrayUsers.push(user);
                 });
                 res.status(200).send(arrayUsers);
             }
             else {
-                res.status(400).json({msg:"No existen usuarios"});
+                res.status(400).json({
+                    msg:"No existen usuarios"
+                });
             }
         }
         else{
@@ -77,57 +79,118 @@ userCtrl.getUserById = (req,res) => {
     User.findById(id)
         .then(data => {
             if(!data){
-                res.status(404).send({message:"Not found User with ID" + id});
+                res.status(404).send({msg:"No se encontró el usuario con el ID " + id});
             }
             else{
-                res.send(data);
+                res.status(200).send(data);
             }
         })
         .catch(err =>{
-            res.status(500).send({message: "Error" + err});
+            res.status(500).send({
+                msg: "Error " + err
+            });
         });
 }
 
-userCtrl.updateUser = (req,res) =>{
-    if(!req.body){
-        return res.status(400).send({message: "Data to update can not be empty!"})
-    }
+userCtrl.activateUser = (req,res) =>{
     const id = req.params.id;
-    User.findByIdAndUpdate(id,req.body,{ useFindAndModify: false})
-        .then(data =>{
+    req.body = {userActive: true};
+    
+    User.findByIdAndUpdate(id,req.body,{ useFindAndModify: false })
+        .then(data => {
             if(!data){
-                res.status(404).send({message: "Cannot update user with id:" + id + "maybe not found"})
+                res.status(404).send({
+                    msg: "Cannot update user with id: " + id + " maybe not found"
+                });
             }else{
-                res.send({message: "User was updated!!"});
+                res.status(200).send({
+                    msg: "Usuario activado exitosamente"
+                });
             }
         })
-        .catch(err =>{
-            res.status(500).send({message: "error" + err})
+        .catch(err => {
+            res.status(500).send({
+                msg: "error" + err
+            });
         })
 }
 
-userCtrl.deleteUser = (req,res)=>{
+userCtrl.updateUser = (req,res) =>{
+    console.log(req.body);
+    if(req.body == {}){
+        return res.status(400).send({
+            msg: "Data to update can not be empty!"
+        });
+    }
+    const id = req.params.id;
+    User.findByIdAndUpdate(id,req.body,{ useFindAndModify: false })
+        .then(data => {
+            if(!data){
+                res.status(404).send({
+                    msg: "Cannot update user with id: " + id + " maybe not found"
+                });
+            }else{
+                res.status(200).send({
+                    msg: "Usuario actualizado exitosamente"
+                });
+            }
+        })
+        .catch(err =>{
+            res.status(500).send({
+                msg: "error" + err
+            });
+        })
+}
+
+userCtrl.deleteUserLogic = (req,res) => {
+    const id = req.params.id;
+    req.body = {userDeleted: true};
+    
+    User.findByIdAndUpdate(id,req.body,{useFindAndModify: false})
+        .then(data => {
+            if (!data) {
+                res.status(404).send({
+                    msg: "Cannot update user with id: " + id + " maybe not found"
+                });
+            } else {
+                res.status(200).send({
+                    msg: "Usuario borrado exitosamente v1"
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                msg: "error" + err
+            });
+        })
+}
+
+userCtrl.deleteUser = (req,res) => {
     const id = req.params.id;
     User.findByIdAndRemove(id)
         .then(data => {
             if(!data){
-                res.status(404).send({message: "Cannot delete User with id" + id + "maybe user not found"})
+                res.status(404).send({msg: "Cannot delete User with id" + id + "maybe user not found"})
             }else{
-                res.send({message: "User was deleted successful"});
+                res.send({msg:"Usuario borrado correctament v2"});
             }
         })
         .catch(err=>{
-            res.status(500).send({message: "error" + err});
+            res.status(500).send({msg: "error" + err});
         })
 }
 
 userCtrl.deleteAllUsers = (req,res) =>{
     User.deleteMany({})
-        .then(data =>{
-            res.send({message: "Users were deleted succesful!! Count:" + data.deletedCount })
+        .then(data => {
+            res.send({
+                msg: "Users were deleted succesful!! Count:" + data.deletedCount
+            });
         })
         .catch(err=>{
-            res.status(500).send({message: "Error when deleted"})
+            res.status(500).send({
+                msg: "Error when deleted"
+            });
         })
 }
 

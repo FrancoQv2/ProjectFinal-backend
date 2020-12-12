@@ -5,11 +5,12 @@ const userCtrl = require('../controllers/user.controller');
 const {
     createUser,
     getUsers,
-    // getUser,
     getUserById,
     deleteUser,
-    updateUser
+    updateUser,
+    activateUser
     // ,deleteAllUsers
+    ,deleteUserLogic
 } = userCtrl;
 
 const router = express.Router();
@@ -36,10 +37,13 @@ router.route('/')
 //Trear 1 usuario por id
 //Borrar un usuario con el id
 //Actualizar Usuario
-router.route('/id/:id')
-    // .get(getUser)
+router.route('/user/:id')
     .get(getUserById)
-    .delete(deleteUser)
-    .put(updateUser);
+    .put(updateUser)
+    .delete(deleteUserLogic);
+
+router.route('/admin/:id')
+    .put(activateUser)
+    .delete(deleteUser);
 
 module.exports = router;
