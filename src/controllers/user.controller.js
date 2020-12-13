@@ -57,7 +57,9 @@ userCtrl.getUsers = async (req,res) => {
                         userActive:   eachUser.userActive,
                         userDeleted:   eachUser.userDeleted
                     }
-                    arrayUsers.push(user);
+                    if (!user.userDeleted) {
+                        arrayUsers.push(user);
+                    }
                 });
                 res.status(200).send(arrayUsers);
             }
