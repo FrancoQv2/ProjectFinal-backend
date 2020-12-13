@@ -7,7 +7,10 @@ const {
     getCards,
     getCard,
     updateCard,
-    deleteCard
+    deleteCard,
+    getCardsDeleted,
+    getCardDeleted,
+    recoverCardDeleted
 } = cardCtrl;
 
 const router = express.Router();
@@ -27,5 +30,12 @@ router.route('/card/:id')
     .get(getCard)
     .put(updateCard)
     .delete(deleteCard);
+
+router.route('/deleted')
+    .get(getCardsDeleted);
+
+router.route('/deleted/:id')
+    .get(getCardDeleted)
+    .put(recoverCardDeleted);
 
 module.exports = router;
