@@ -4,8 +4,8 @@ const {validationResult} = require('express-validator');
 const userCtrl = {};
 
 userCtrl.createUser = async (req,res) => {
-    console.log("- entra createUser");
-    console.log(req.body);
+    // console.log("- entra createUser");
+    // console.log(req.body);
 
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -73,14 +73,13 @@ userCtrl.getUsers = async (req,res) => {
             console.log(err);
         }
     });
-    // }).populate("tasks");
 }
 
-userCtrl.getUserById = (req,res) => {
+userCtrl.getUser = (req,res) => {
     const id = req.params.id;
     User.findById(id)
         .then(data => {
-            if(!data){
+            if(!data || data.userDeleted != false){
                 res.status(404).send({msg:"No se encontró el usuario con el ID " + id});
             }
             else{
@@ -92,29 +91,6 @@ userCtrl.getUserById = (req,res) => {
                 msg: "Error " + err
             });
         });
-}
-
-userCtrl.activateUser = (req,res) =>{
-    const id = req.params.id;
-    req.body = {userActive: true};
-    
-    User.findByIdAndUpdate(id,req.body,{ useFindAndModify: false })
-        .then(data => {
-            if(!data){
-                res.status(404).send({
-                    msg: "Cannot update user with id: " + id + " maybe not found"
-                });
-            }else{
-                res.status(200).send({
-                    msg: "Usuario activado exitosamente"
-                });
-            }
-        })
-        .catch(err => {
-            res.status(500).send({
-                msg: "error" + err
-            });
-        })
 }
 
 userCtrl.updateUser = (req,res) =>{
@@ -144,7 +120,7 @@ userCtrl.updateUser = (req,res) =>{
         })
 }
 
-userCtrl.deleteUserLogic = (req,res) => {
+userCtrl.deleteUser = (req,res) => {
     const id = req.params.id;
     req.body = {userDeleted: true};
     
@@ -156,7 +132,7 @@ userCtrl.deleteUserLogic = (req,res) => {
                 });
             } else {
                 res.status(200).send({
-                    msg: "Usuario borrado exitosamente v1"
+                    msg: "Usuario borrado exitosamente"
                 });
             }
         })
@@ -167,31 +143,111 @@ userCtrl.deleteUserLogic = (req,res) => {
         })
 }
 
-userCtrl.deleteUser = (req,res) => {
-    const id = req.params.id;
-    User.findByIdAndRemove(id)
-        .then(data => {
-            if(!data){
-                res.status(404).send({msg: "Cannot delete User with id" + id + "maybe user not found"})
-            }else{
-                res.send({msg:"Usuario borrado correctament v2"});
+// userCtrl.deleteUser = (req,res) => {
+//     const id = req.params.id;
+//     User.findByIdAndRemove(id)
+//         .then(data => {
+//             if(!data){
+//                 res.status(404).send({msg: "Cannot delete User with id" + id + "maybe user not found"})
+//             }else{
+//                 res.send({msg:"Usuario borrado correctament v2"});
+//             }
+//         })
+//         .catch(err=>{
+//             res.status(500).send({msg: "error" + err});
+//         })
+// }
+
+// userCtrl.deleteAllUsers = (req,res) =>{
+//     User.deleteMany({})
+//         .then(data => {
+//             res.send({
+//                 msg: "Users were deleted succesful!! Count:" + data.deletedCount
+//             });
+//         })
+//         .catch(err=>{
+//             res.status(500).send({
+//                 msg: "Error when deleted"
+//             });
+//         })
+// }
+
+// ------------------------------------------------------------------------
+
+userCtrl.getUsersDeleted = async (req,res) => {
+    await User.find({},function(err,users){
+        if(!err){
+            if(users.length != 0) {
+                // console.log(users);
+                // console.log(typeof users);
+                const arrayUsers = [];
+                users.forEach(eachUser => {
+                    let user = {
+                        id:         eachUser.id,
+                        name:       eachUser.name,
+                        last_name:  eachUser.last_name,
+                        country:    eachUser.country,
+                        age:        eachUser.age,
+                        email:      eachUser.email,
+                        username:   eachUser.username,
+                        userActive:   eachUser.userActive,
+                        userDeleted:   eachUser.userDeleted
+                    }
+                    if (user.userDeleted) {
+                        arrayUsers.push(user);
+                    }
+                });
+                res.status(200).send(arrayUsers);
             }
-        })
-        .catch(err=>{
-            res.status(500).send({msg: "error" + err});
-        })
+            else {
+                res.status(400).json({
+                    msg:"No existen usuarios"
+                });
+            }
+        }
+        else{
+            console.log(err);
+        }
+    });
 }
 
-userCtrl.deleteAllUsers = (req,res) =>{
-    User.deleteMany({})
+userCtrl.getUserDeleted = (req,res) => {
+    const id = req.params.id;
+    User.findById(id)
         .then(data => {
-            res.send({
-                msg: "Users were deleted succesful!! Count:" + data.deletedCount
-            });
+            if(!data || data.userDeleted != true){
+                res.status(404).send({msg:"No se encontró el usuario con el ID " + id});
+            }
+            else{
+                res.status(200).send(data);
+            }
         })
-        .catch(err=>{
+        .catch(err =>{
             res.status(500).send({
-                msg: "Error when deleted"
+                msg: "Error " + err
+            });
+        });
+}
+
+userCtrl.recoverUserDeleted = (req,res) =>{
+    const id = req.params.id;
+    req.body = {userDeleted: false};
+    
+    User.findByIdAndUpdate(id,req.body,{ useFindAndModify: false })
+        .then(data => {
+            if(!data){
+                res.status(404).send({
+                    msg: "Cannot update user with id: " + id + " maybe not found"
+                });
+            }else{
+                res.status(200).send({
+                    msg: "Usuario recuperado exitosamente"
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                msg: "error" + err
             });
         })
 }

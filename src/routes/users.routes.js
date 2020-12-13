@@ -5,12 +5,12 @@ const userCtrl = require('../controllers/user.controller');
 const {
     createUser,
     getUsers,
-    getUserById,
-    deleteUser,
+    getUser,
     updateUser,
-    activateUser
-    // ,deleteAllUsers
-    ,deleteUserLogic
+    deleteUser,
+    getUsersDeleted,
+    getUserDeleted,
+    recoverUserDeleted
 } = userCtrl;
 
 const router = express.Router();
@@ -32,19 +32,21 @@ const checksCreateUser = [
 //Borrado masivo de usuarios
 router.route('/')
     .post(checksCreateUser,createUser)
-    // .delete(deleteAllUsers)
     .get(getUsers);
 
 //Trear 1 usuario por id
 //Borrar un usuario con el id
 //Actualizar Usuario
 router.route('/user/:id')
-    .get(getUserById)
+    .get(getUser)
     .put(updateUser)
-    .delete(deleteUserLogic);
-
-router.route('/admin/:id')
-    .put(activateUser)
     .delete(deleteUser);
+
+router.route('/deleted')
+    .get(getUsersDeleted);
+
+router.route('/deleted/:id')
+    .get(getUserDeleted)
+    .put(recoverUserDeleted);
 
 module.exports = router;
