@@ -14,23 +14,24 @@ const {
 } = userCtrl;
 
 const router = express.Router();
+const checksCreateUser = [
+    check('name','El nombre es obligatorio!').not().isEmpty(),
+    check('last_name','El apellido es obligatorio!').not().isEmpty(),
+    check('country','El país es obligatorio!').not().isEmpty(),
+    check('age','Su edad es obligatoria!').not().isEmpty(),
+    check('email','El email es obligatorio!').not().isEmpty(),
+    check('email','Debe ser formato email!').isEmail(),
+    check('username','Debe agregar un nombre de usuario').not().isEmpty(),
+    check('username','El nombre de usuario debe tener como mínimo 3 caracteres').isLength({min:3}),
+    check('password','Debe agregar la contraseña').notEmpty(),
+    check('password','El password debe debe tener como mínimo de 6 caracteres').isLength({min:6})
+];
 
 //Alta de Usuarios
 //Obtener Usuarios
 //Borrado masivo de usuarios
 router.route('/')
-    .post([
-        check('name','El nombre es obligatorio!').not().isEmpty(),
-        check('last_name','El apellido es obligatorio!').not().isEmpty(),
-        check('country','El país es obligatorio!').not().isEmpty(),
-        check('age','Su edad es obligatoria!').not().isEmpty(),
-        check('email','El email es obligatorio!').not().isEmpty(),
-        check('email','Debe ser formato email!').isEmail(),
-        check('username','Debe agregar un nombre de usuario').not().isEmpty(),
-        check('username','El nombre de usuario debe tener como mínimo 3 caracteres').isLength({min:3}),
-        check('password','Debe agregar la contraseña').notEmpty(),
-        check('password','El password debe debe tener como mínimo de 6 caracteres').isLength({min:6})
-    ],createUser)
+    .post(checksCreateUser,createUser)
     // .delete(deleteAllUsers)
     .get(getUsers);
 
