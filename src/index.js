@@ -7,8 +7,10 @@ dotenv.config();
 const mongoose = require('./database');
 const userRouter = require('./routes/users.routes');
 const cardRouter = require('./routes/cards.routes');
+const initialSetup = require('./libs/initialSetup');
 
 const app = express();
+initialSetup.createAdmin();
 
 // Puerto de la App
 const PORT = process.env.PORT || 4000;
@@ -16,7 +18,7 @@ const PORT = process.env.PORT || 4000;
 // Iniciar la App
 app.listen(PORT, () => {
     console.log(path.join(__dirname, "../public"));
-    console.log(`** El servidor está funcionando en el puerto ${PORT} **`);
+    console.log(`** Server on Port ${PORT} **`);
 });
 
 // Middlewares

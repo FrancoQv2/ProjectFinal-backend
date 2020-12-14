@@ -54,6 +54,7 @@ userCtrl.getUsers = async (req,res) => {
                         age:        eachUser.age,
                         email:      eachUser.email,
                         username:   eachUser.username,
+                        role:       eachUser.role,
                         userActive:   eachUser.userActive,
                         userDeleted:   eachUser.userDeleted
                     }
@@ -94,7 +95,6 @@ userCtrl.getUser = (req,res) => {
 }
 
 userCtrl.updateUser = (req,res) =>{
-    console.log(req.body);
     if(req.body == {}){
         return res.status(400).send({
             msg: "Data to update can not be empty!"

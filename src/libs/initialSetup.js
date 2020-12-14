@@ -1,48 +1,28 @@
 const User = require('../models/user');
-const Role = require('../models/role');
 const bcryptjs = require('bcryptjs');
 
-const initialSetups = {};
+const initialSetup = {};
 
-initialSetups.createRoles = async () => {
+initialSetup.createAdmin = async () => {
     try {
-        const cantidad = await Role.estimatedDocumentCount();
-        if (cantidad > 0) 
-            return;
-
-        const roles = await Promise.all([
-            new Role({ name: "admin" }).save(),
-            new Role({ name: "user" }).save()
-        ]);
-        console.log(roles);
-    } catch (error) {
-        console.log(error);
-    }
-};
-
-initialSetups.createAdmin = async () =>{
-    try {
-        const user = await User.findOne({usuario:'admin'});
-        const roles = await Role.find({name:{$in: ["admin","user"]}})
+        const user = await User.findOne({role:'admin'});
     if(!user){
         await User.create({
-            name: 'admin',
+            name: '-',
             last_name: '-',
             country: '-',
-            age: '-',
+            age: '0',
             email:'admin@admin.com',
             username:'admin',
-            // password: await bcryptjs.hash("admin",10),
-            password: await newUser.encryptPassword("admin"),
-            userActive: true,
-            sessionState:false,
-            role: roles.map((item) => item._id)
+            password: await bcryptjs.hash('admin',10),
+            role: 'admin',
+            userActive: true
         })
-        console.log('Rol admin creado!');
+        console.log('** Admin user created **');
     }
     } catch (error) {
         console.log(error);
     }
 }
 
-module.exports = initialSetups;
+module.exports = initialSetup;

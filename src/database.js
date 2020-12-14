@@ -11,7 +11,7 @@ const OPTIONS = {
 }
 
 mongoose.connect(URI,OPTIONS)
-    .then(db => console.log("** Base de datos conectada **"))
+    .then(db => console.log("** DB connected **"))
     .catch(error =>{
         console.error(error);
         process.exit(1);
