@@ -7,6 +7,7 @@ dotenv.config();
 const mongoose = require('./database');
 const userRouter = require('./routes/users.routes');
 const cardRouter = require('./routes/cards.routes');
+const profileRouter = require('./routes/profile.routes');
 const initialSetup = require('./libs/initialSetup');
 
 const app = express();
@@ -31,3 +32,4 @@ app.use(express.static(path.join(__dirname, "../public")));
 // Rutas
 app.use('/api/users', userRouter);
 app.use('/api/cards', cardRouter);
+app.use('/api/profiles', profileRouter);

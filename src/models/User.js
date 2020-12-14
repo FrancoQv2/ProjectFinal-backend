@@ -44,6 +44,10 @@ const UserSchema = mongoose.Schema({
         required: true,
         default: 'user'
     },
+    profile:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Profile'
+    },
     userActive: {
         type: Boolean,
         default: false
@@ -58,13 +62,13 @@ const UserSchema = mongoose.Schema({
     }
 });
 
-UserSchema.methods.encryptPassword = async (password) =>{
+UserSchema.methods.encryptPassword = async (password) => {
     const salt = await bcryptjs.genSalt(10);
     return bcryptjs.hash(password, salt);
 }
 
-UserSchema.methods.validatePassword = function(password){
-    return bcrypt.compare(password,this.password);
+UserSchema.methods.validatePassword = function (password) {
+    return bcryptjs.compare(password,this.password);
 }
 
 const User = mongoose.model('User', UserSchema);

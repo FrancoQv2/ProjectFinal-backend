@@ -11,6 +11,7 @@ const {
     getCardsDeleted,
     getCardDeleted,
     recoverCardDeleted
+    ,getRandomCard
 } = cardCtrl;
 
 const router = express.Router();
@@ -30,6 +31,9 @@ router.route('/card/:id')
     .get(getCard)
     .put(updateCard)
     .delete(deleteCard);
+
+router.route('/user')
+    .get(getRandomCard)
 
 router.route('/deleted')
     .get(getCardsDeleted);

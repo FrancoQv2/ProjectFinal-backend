@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const Card = require('../models/card');
 const {validationResult} = require('express-validator');
 
 const userCtrl = {};
@@ -42,7 +43,7 @@ userCtrl.getUsers = async (req,res) => {
     await User.find({},function(err,users){
         if(!err){
             if(users.length != 0) {
-                // console.log(users);
+                console.log(users);
                 // console.log(typeof users);
                 const arrayUsers = [];
                 users.forEach(eachUser => {
@@ -55,6 +56,7 @@ userCtrl.getUsers = async (req,res) => {
                         email:      eachUser.email,
                         username:   eachUser.username,
                         role:       eachUser.role,
+                        cards:      eachUser.cards,
                         userActive:   eachUser.userActive,
                         userDeleted:   eachUser.userDeleted
                     }
@@ -73,7 +75,7 @@ userCtrl.getUsers = async (req,res) => {
         else{
             console.log(err);
         }
-    });
+    }).populate({path:'Card',select:'name img type rarity power'});
 }
 
 userCtrl.getUser = (req,res) => {
@@ -91,7 +93,7 @@ userCtrl.getUser = (req,res) => {
             res.status(500).send({
                 msg: "Error " + err
             });
-        });
+        }).populate({path:'Card',select:'name img type rarity power'});
 }
 
 userCtrl.updateUser = (req,res) =>{
@@ -229,7 +231,7 @@ userCtrl.getUserDeleted = (req,res) => {
         });
 }
 
-userCtrl.recoverUserDeleted = (req,res) =>{
+userCtrl.recoverUserDeleted = (req,res) => {
     const id = req.params.id;
     req.body = {userDeleted: false};
     
@@ -251,5 +253,56 @@ userCtrl.recoverUserDeleted = (req,res) =>{
             });
         })
 }
+
+// ------------------------------------------------------------------------
+
+// userCtrl.addRandomCard = async (req,res) => {
+//     const id = req.params.id;
+//     Card.findById(id)
+//         .then(data => {
+//             console.log(data);
+//             if(!data || data.cardDeleted != false){
+//                 res.status(404).send({msg:"No se encontró la carta con el ID " + id});
+//             }
+//             else{
+//                 res.status(200).send(data);
+//             }
+//         })
+//         .catch(err =>{
+//             res.status(500).send({
+//                 msg: "Error " + err
+//             });
+//         });
+    
+//     req.body = {  }
+    
+//     const id = req.params.id;
+//     User.findByIdAndUpdate(id,req.body,{ useFindAndModify: false })
+//         .then(data => {
+//             if(!data){
+//                 res.status(404).send({
+//                     msg: "Cannot update user with id: " + id + " maybe not found"
+//                 });
+//             }else{
+//                 res.status(200).send({
+//                     msg: "Usuario actualizado exitosamente"
+//                 });
+//             }
+//         })
+//         .catch(err =>{
+//             res.status(500).send({
+//                 msg: "error" + err
+//             });
+//         })
+    
+    
+    
+    
+    
+
+
+
+
+// }
 
 module.exports = userCtrl;

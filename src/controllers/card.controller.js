@@ -12,6 +12,8 @@ cardCtrl.createCard = async (req,res) => {
     const {name, img, type, rarity, power} = req.body;
     try{
         let newCard = await Card.findOne({name});
+        console.log(newCard);
+        console.log(typeof newCard);
 
         if(newCard){ 
             return res.status(400).json({msg:'Esta carta ya existe'});
@@ -57,7 +59,7 @@ cardCtrl.getCards = async (req,res) => {
                 });
             }
         }
-        else{
+        else {
             console.log(err);
         }
     });
@@ -207,6 +209,43 @@ cardCtrl.recoverCardDeleted = (req,res) => {
                 msg: "error" + err
             });
         })
+}
+
+// ------------------------------------------------------------------------
+
+cardCtrl.getRandomCard = async (req,res) => {
+    function getRandomNumber(min,max) {
+        let step1 = max - min + 1;
+        let step2 = Math.random() * step1;
+        let result = Math.floor(step2) + min;
+        return result;
+    }
+
+    const cardsInStorage = await Card.estimatedDocumentCount();
+    console.log(cardsInStorage);
+    const randomIndex = getRandomNumber(0, cardsInStorage-1);
+    console.log(randomIndex);
+
+
+
+    // let toAddCard = await Card.findOne({name});
+
+    // const id = req.params.id;
+    // Card.findById(id)
+    //     .then(data => {
+    //         console.log(data);
+    //         if(!data || data.cardDeleted != false){
+    //             res.status(404).send({msg:"No se encontró la carta con el ID " + id});
+    //         }
+    //         else{
+    //             res.status(200).send(data);
+    //         }
+    //     })
+    //     .catch(err =>{
+    //         res.status(500).send({
+    //             msg: "Error " + err
+    //         });
+    //     });
 }
 
 module.exports = cardCtrl;
