@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const {validationResult} = require('express-validator');
+const bcryptjs = require('bcryptjs');
 
 const userCtrl = {};
 
@@ -250,6 +251,41 @@ userCtrl.recoverUserDeleted = (req,res) =>{
                 msg: "error" + err
             });
         })
+}
+
+// ------------------------------------------------------------------------
+
+userCtrl.verifyLogin = async (req,res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({errors: errors.array()})
+    }
+
+    const {username, password} = req.body;
+    try{
+        console.log(req.body);
+        let findUser = await User.findOne({username});
+        console.log(findUser);
+
+        if(!findUser){ 
+            return res.status(400).json({msg:'Este usuario no existe'});
+        }
+
+        const verifyPassword = await findUser.validatePassword(password);
+
+        if (verifyPassword) {
+            res.status(200).json({
+                msg:'Usuario verificado correctamente'
+            });
+        } else {
+            res.status(400).json({msg:'La contraseña es incorrecta'});
+        }    
+    }catch(error){
+        console.log(error);
+        res.status(400).json({
+            msg:'Hubo un error al verificar el usuario'
+        });
+    }
 }
 
 module.exports = userCtrl;

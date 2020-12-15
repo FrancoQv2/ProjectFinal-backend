@@ -11,6 +11,7 @@ const {
     getUsersDeleted,
     getUserDeleted,
     recoverUserDeleted
+    ,verifyLogin
 } = userCtrl;
 
 const router = express.Router();
@@ -21,6 +22,12 @@ const checksCreateUser = [
     check('age','Su edad es obligatoria!').not().isEmpty(),
     check('email','El email es obligatorio!').not().isEmpty(),
     check('email','Debe ser formato email!').isEmail(),
+    check('username','Debe agregar un nombre de usuario').not().isEmpty(),
+    check('username','El nombre de usuario debe tener como mínimo 3 caracteres').isLength({min:3}),
+    check('password','Debe agregar la contraseña').notEmpty(),
+    check('password','El password debe debe tener como mínimo de 6 caracteres').isLength({min:6})
+];
+const checksLogin = [
     check('username','Debe agregar un nombre de usuario').not().isEmpty(),
     check('username','El nombre de usuario debe tener como mínimo 3 caracteres').isLength({min:3}),
     check('password','Debe agregar la contraseña').notEmpty(),
@@ -48,5 +55,8 @@ router.route('/deleted')
 router.route('/deleted/:id')
     .get(getUserDeleted)
     .put(recoverUserDeleted);
+
+router.route('/login')
+    .post(verifyLogin)
 
 module.exports = router;
