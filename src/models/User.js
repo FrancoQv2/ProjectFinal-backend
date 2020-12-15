@@ -67,8 +67,8 @@ UserSchema.methods.encryptPassword = async (password) => {
     return bcryptjs.hash(password, salt);
 }
 
-UserSchema.methods.validatePassword = function (password) {
-    return bcryptjs.compare(password,this.password);
+UserSchema.methods.validatePassword = function(password){
+    return bcryptjs.compareSync(password,this.password);
 }
 
 const User = mongoose.model('User', UserSchema);
