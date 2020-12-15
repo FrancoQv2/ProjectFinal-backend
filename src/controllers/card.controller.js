@@ -12,8 +12,6 @@ cardCtrl.createCard = async (req,res) => {
     const {name, img, type, rarity, power} = req.body;
     try{
         let newCard = await Card.findOne({name});
-        console.log(newCard);
-        console.log(typeof newCard);
 
         if(newCard){ 
             return res.status(400).json({msg:'Esta carta ya existe'});
@@ -222,30 +220,39 @@ cardCtrl.getRandomCard = async (req,res) => {
     }
 
     const cardsInStorage = await Card.estimatedDocumentCount();
-    console.log(cardsInStorage);
     const randomIndex = getRandomNumber(0, cardsInStorage-1);
-    console.log(randomIndex);
 
+    let randomCard = {};
 
+    if (randomIndex == 1) {
+        randomCard = await Card.find().limit(randomIndex).skip(randomIndex);
+    } else {
+        randomCard = await Card.find().limit(randomIndex+1).skip(randomIndex);
+    }
+    // console.log(randomCard);
+    // console.log(typeof randomCard);
+    const newCardId = randomCard[0]._id;
 
-    // let toAddCard = await Card.findOne({name});
-
-    // const id = req.params.id;
-    // Card.findById(id)
-    //     .then(data => {
-    //         console.log(data);
-    //         if(!data || data.cardDeleted != false){
-    //             res.status(404).send({msg:"No se encontró la carta con el ID " + id});
-    //         }
-    //         else{
-    //             res.status(200).send(data);
-    //         }
-    //     })
-    //     .catch(err =>{
-    //         res.status(500).send({
-    //             msg: "Error " + err
-    //         });
-    //     });
+    Card.findById(newCardId)
+    .then(card => {
+        console.log("-- getRandomCard");
+        console.log(card);
+        console.log(typeof card);
+        console.log("end getRandomCard");
+        return card;
+        // if(!card || card.cardDeleted != false){
+        //     res.status(404).send({msg:"No se encontró la carta con el ID " + newCardId});
+        // }
+        // else{
+        //     res.send(card);
+        // }
+    })
+    .catch(err =>{
+        console.log(err);
+        // res.status(500).send({
+        //     msg: "Error " + err
+        // });
+    });
 }
 
 module.exports = cardCtrl;

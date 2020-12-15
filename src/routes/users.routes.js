@@ -10,7 +10,8 @@ const {
     deleteUser,
     getUsersDeleted,
     getUserDeleted,
-    recoverUserDeleted
+    recoverUserDeleted,
+    addCardToUserDeck
     // ,addRandomCard
     // ,deleteCard
 } = userCtrl;
@@ -44,10 +45,8 @@ router.route('/user/:id')
     .put(updateUser)
     .delete(deleteUser);
 
-// router.route('/cards/:id')
-//     .put(addRandomCard)
-//     .delete(deleteCard)
-//     ;
+router.route('/deck/:id')
+    .get(addCardToUserDeck);
 
 router.route('/deleted')
     .get(getUsersDeleted);

@@ -10,10 +10,10 @@ const {
 
 const router = express.Router();
 
-router.route('/')
-    post(addProfile)
-    .get(getProfiles)
-    ;
+// router.route('/')
+//     post(addProfile)
+//     .get(getProfiles)
+//     ;
 
 
 

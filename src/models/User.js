@@ -44,10 +44,10 @@ const UserSchema = mongoose.Schema({
         required: true,
         default: 'user'
     },
-    profile:{
+    card_deck:[{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Profile'
-    },
+        ref: 'Card'
+    }],
     userActive: {
         type: Boolean,
         default: false

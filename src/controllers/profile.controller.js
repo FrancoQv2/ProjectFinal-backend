@@ -35,4 +35,45 @@ profileCtrl.getProfile = async (req,res) => {
         })
 }
 
+// profileCtrl.getRandomCard = async (req,res) => {
+//     function getRandomNumber(min,max) {
+//         let step1 = max - min + 1;
+//         let step2 = Math.random() * step1;
+//         let result = Math.floor(step2) + min;
+//         return result;
+//     }
+
+//     const cardsInStorage = await Card.estimatedDocumentCount();
+//     console.log(cardsInStorage);
+//     const randomIndex = getRandomNumber(0, cardsInStorage-1);
+//     console.log(randomIndex);
+
+//     let newUser = await Card.findOne({ $arrayElemAt: [ <array>, randomIndex ] });
+//     console.log("Esta en la db?" + newUser);
+
+
+//     const id = req.params.id;
+//     Card.findById(id)
+//         .then(data => {
+//             console.log(data);
+//             if(!data || data.cardDeleted != false){
+//                 res.status(404).send({msg:"No se encontró la carta con el ID " + id});
+//             }
+//             else{
+//                 res.status(200).send(data);
+//             }
+//         })
+//         .catch(err =>{
+//             res.status(500).send({
+//                 msg: "Error " + err
+//             });
+//         });
+
+
+
+//     const user = await User.findById(owner);
+//     user.tasks.push(task);
+//     await user.save();
+// }
+
 module.exports = profileCtrl;

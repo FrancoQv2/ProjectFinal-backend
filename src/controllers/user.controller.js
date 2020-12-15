@@ -1,5 +1,7 @@
 const User = require('../models/user');
 const Card = require('../models/card');
+const Profile = require('../models/profile');
+const cardCtrl = require('../controllers/card.controller');
 const {validationResult} = require('express-validator');
 
 const userCtrl = {};
@@ -56,9 +58,9 @@ userCtrl.getUsers = async (req,res) => {
                         email:      eachUser.email,
                         username:   eachUser.username,
                         role:       eachUser.role,
-                        cards:      eachUser.cards,
+                        card_deck:    eachUser.card_deck,
                         userActive:   eachUser.userActive,
-                        userDeleted:   eachUser.userDeleted
+                        userDeleted:  eachUser.userDeleted
                     }
                     if (!user.userDeleted) {
                         arrayUsers.push(user);
@@ -75,13 +77,14 @@ userCtrl.getUsers = async (req,res) => {
         else{
             console.log(err);
         }
-    }).populate({path:'Card',select:'name img type rarity power'});
+    });
 }
 
 userCtrl.getUser = (req,res) => {
     const id = req.params.id;
     User.findById(id)
         .then(data => {
+            console.log(typeof data);
             if(!data || data.userDeleted != false){
                 res.status(404).send({msg:"No se encontró el usuario con el ID " + id});
             }
@@ -93,7 +96,7 @@ userCtrl.getUser = (req,res) => {
             res.status(500).send({
                 msg: "Error " + err
             });
-        }).populate({path:'Card',select:'name img type rarity power'});
+        });
 }
 
 userCtrl.updateUser = (req,res) =>{
@@ -294,15 +297,103 @@ userCtrl.recoverUserDeleted = (req,res) => {
 //                 msg: "error" + err
 //             });
 //         })
+// }    
     
-    
-    
-    
-    
+
+// ------------------------------------------------------------------------
 
 
 
+userCtrl.addCardToUserDeck = async (req,res) => {
 
-// }
 
+
+    // try{
+    //     const newRandomCard = cardCtrl.getRandomCard();
+    //     console.log("-- addCardToUserDeck");
+    //     console.log(newRandomCard);
+        
+    //     // let newUser = await User.findOne({email});
+    //     // console.log("Esta en la db?" + newUser);
+
+    //     // if(newUser){ 
+    //     //     return res.status(400).json({msg:'Este usuario ya existe'});
+    //     // }
+    //     // newUser = new User(req.body);
+    //     // console.log(newUser);
+        
+    //     // newUser.password = await newUser.encryptPassword(newUser.password);
+
+    //     // await newUser.save();
+    //     // res.status(201).json({
+    //     //     msg:'Usuario creado correctamente'
+    //     // });
+
+    //     let getCardUser = await User.findOne({_id});
+    //     console.log("-----------");
+    //     console.log(getCardUser);
+    //     console.log(getCardUser.card_deck);
+    //     await getCardUser.card_deck.push(newRandomCard);
+    //     console.log("-----------");
+    //     console.log(getCardUser);
+    // }catch(error){
+    //     console.log(error);
+    //     res.status(400).json({
+    //         msg:'Hubo un error al crear el usuario'
+    //     });
+    // }
+    const id = req.params.id;
+    try {
+        // let getCardUser = await User.findById(id);
+        // console.log(getCardUser);
+        // console.log(typeof getCardUser);
+        // const newRandomCard = cardCtrl.getRandomCard();
+
+        // // getCardUser.card_deck.push(newRandomCard)
+        // console.log(newRandomCard);
+
+        await Promise.all([
+            await User.findById(id),
+            await cardCtrl.getRandomCard()    
+        ]).then(profile => {
+            console.log(profile)
+        })
+
+        
+        
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            msg:'Hubo un error al obtener una nueva carta'
+        });
+    }
+    
+
+    
+    
+
+    // await User.findById(id)
+    //     .then(data => {
+    //         console.log("-- user");
+    //         console.log(data);
+    //         if(!data || data.userDeleted != false){
+    //             res.status(404).send({msg:"No se encontró el usuario con el ID " + id});
+    //         }
+    //     })
+    //     .then(async data => {
+    //         const newRandomCard = await cardCtrl.getRandomCard()
+    //         .then(
+    //             console.log("-- addCardToUserDeck")
+    //             console.log(newRandomCard)
+    //         )
+            
+            
+    //     })
+    //     .catch(err =>{
+    //         res.status(500).send({
+    //             msg: "Error " + err
+    //         });
+    //     });
+}
+   
 module.exports = userCtrl;

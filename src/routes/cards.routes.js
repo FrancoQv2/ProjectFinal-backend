@@ -32,11 +32,11 @@ router.route('/card/:id')
     .put(updateCard)
     .delete(deleteCard);
 
-router.route('/user')
-    .get(getRandomCard)
-
 router.route('/deleted')
     .get(getCardsDeleted);
+
+router.route('/user')
+    .get(getRandomCard);
 
 router.route('/deleted/:id')
     .get(getCardDeleted)
