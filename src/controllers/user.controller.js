@@ -1,13 +1,9 @@
 const User = require('../models/user');
-const {validationResult} = require('express-validator');
-const bcryptjs = require('bcryptjs');
+const { validationResult } = require('express-validator');
 
 const userCtrl = {};
 
 userCtrl.createUser = async (req,res) => {
-    // console.log("- entra createUser");
-    // console.log(req.body);
-
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         return res.status(400).json({errors: errors.array()})
@@ -15,16 +11,12 @@ userCtrl.createUser = async (req,res) => {
 
     const {name, last_name, country, age, email, username, password} = req.body;
     try{
-        // let user = await (User.findOne({email}) || User.findOne({username}));
         let newUser = await User.findOne({email});
-        console.log("Esta en la db?" + newUser);
-
         if(newUser){ 
             return res.status(400).json({msg:'Este usuario ya existe'});
         }
         newUser = new User(req.body);
         console.log(newUser);
-        
         newUser.password = await newUser.encryptPassword(newUser.password);
 
         await newUser.save();
@@ -43,21 +35,19 @@ userCtrl.getUsers = async (req,res) => {
     await User.find({},function(err,users){
         if(!err){
             if(users.length != 0) {
-                // console.log(users);
-                // console.log(typeof users);
                 const arrayUsers = [];
                 users.forEach(eachUser => {
                     let user = {
-                        id:         eachUser.id,
-                        name:       eachUser.name,
-                        last_name:  eachUser.last_name,
-                        country:    eachUser.country,
-                        age:        eachUser.age,
-                        email:      eachUser.email,
-                        username:   eachUser.username,
-                        role:       eachUser.role,
-                        userActive:   eachUser.userActive,
-                        userDeleted:   eachUser.userDeleted
+                        id:             eachUser.id,
+                        name:           eachUser.name,
+                        last_name:      eachUser.last_name,
+                        country:        eachUser.country,
+                        age:            eachUser.age,
+                        email:          eachUser.email,
+                        username:       eachUser.username,
+                        role:           eachUser.role,
+                        userActive:     eachUser.userActive,
+                        userDeleted:    eachUser.userDeleted
                     }
                     if (!user.userDeleted) {
                         arrayUsers.push(user);
@@ -124,7 +114,6 @@ userCtrl.updateUser = (req,res) =>{
 userCtrl.deleteUser = (req,res) => {
     const id = req.params.id;
     req.body = {userDeleted: true};
-    
     User.findByIdAndUpdate(id,req.body,{useFindAndModify: false})
         .then(data => {
             if (!data) {
@@ -179,20 +168,18 @@ userCtrl.getUsersDeleted = async (req,res) => {
     await User.find({},function(err,users){
         if(!err){
             if(users.length != 0) {
-                // console.log(users);
-                // console.log(typeof users);
                 const arrayUsers = [];
                 users.forEach(eachUser => {
                     let user = {
-                        id:         eachUser.id,
-                        name:       eachUser.name,
-                        last_name:  eachUser.last_name,
-                        country:    eachUser.country,
-                        age:        eachUser.age,
-                        email:      eachUser.email,
-                        username:   eachUser.username,
-                        userActive:   eachUser.userActive,
-                        userDeleted:   eachUser.userDeleted
+                        id:             eachUser.id,
+                        name:           eachUser.name,
+                        last_name:      eachUser.last_name,
+                        country:        eachUser.country,
+                        age:            eachUser.age,
+                        email:          eachUser.email,
+                        username:       eachUser.username,
+                        userActive:     eachUser.userActive,
+                        userDeleted:    eachUser.userDeleted
                     }
                     if (user.userDeleted) {
                         arrayUsers.push(user);
@@ -233,7 +220,6 @@ userCtrl.getUserDeleted = (req,res) => {
 userCtrl.recoverUserDeleted = (req,res) =>{
     const id = req.params.id;
     req.body = {userDeleted: false};
-    
     User.findByIdAndUpdate(id,req.body,{ useFindAndModify: false })
         .then(data => {
             if(!data){
@@ -266,13 +252,11 @@ userCtrl.verifyLogin = async (req,res) => {
         console.log(req.body);
         let findUser = await User.findOne({username});
         console.log(findUser);
-
         if(!findUser){ 
             return res.status(400).json({msg:'Este usuario no existe'});
         }
 
         const verifyPassword = await findUser.validatePassword(password);
-
         if (verifyPassword) {
             res.status(200).json({
                 msg:'Usuario verificado correctamente'

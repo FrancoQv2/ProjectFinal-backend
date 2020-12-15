@@ -10,8 +10,8 @@ const {
     deleteUser,
     getUsersDeleted,
     getUserDeleted,
-    recoverUserDeleted
-    ,verifyLogin
+    recoverUserDeleted,
+    verifyLogin
 } = userCtrl;
 
 const router = express.Router();
@@ -27,23 +27,17 @@ const checksCreateUser = [
     check('password','Debe agregar la contraseña').notEmpty(),
     check('password','El password debe debe tener como mínimo de 6 caracteres').isLength({min:6})
 ];
-const checksLogin = [
+const checksVerifyLogin = [
     check('username','Debe agregar un nombre de usuario').not().isEmpty(),
     check('username','El nombre de usuario debe tener como mínimo 3 caracteres').isLength({min:3}),
     check('password','Debe agregar la contraseña').notEmpty(),
     check('password','El password debe debe tener como mínimo de 6 caracteres').isLength({min:6})
 ];
 
-//Alta de Usuarios
-//Obtener Usuarios
-//Borrado masivo de usuarios
 router.route('/')
     .post(checksCreateUser,createUser)
     .get(getUsers);
 
-//Trear 1 usuario por id
-//Borrar un usuario con el id
-//Actualizar Usuario
 router.route('/user/:id')
     .get(getUser)
     .put(updateUser)
@@ -57,6 +51,6 @@ router.route('/deleted/:id')
     .put(recoverUserDeleted);
 
 router.route('/login')
-    .post(verifyLogin)
+    .post(checksVerifyLogin,verifyLogin)
 
 module.exports = router;

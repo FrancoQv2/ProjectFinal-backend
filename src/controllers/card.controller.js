@@ -1,5 +1,5 @@
-const Card = require('../models/card');
-const {validationResult} = require('express-validator');
+const Card = require('../models/Card');
+const { validationResult } = require('express-validator');
 
 const cardCtrl = {};
 
@@ -12,7 +12,6 @@ cardCtrl.createCard = async (req,res) => {
     const {name, img, type, rarity, power} = req.body;
     try{
         let newCard = await Card.findOne({name});
-
         if(newCard){ 
             return res.status(400).json({msg:'Esta carta ya existe'});
         }
@@ -86,7 +85,7 @@ cardCtrl.updateCard = (req,res) =>{
     console.log(req.body);
     if(req.body == {}){
         return res.status(400).send({
-            msg: "Data to update can not be empty!"
+            msg: "Los campos no pueden estar vacíos!"
         });
     }
     const id = req.params.id;
@@ -94,7 +93,7 @@ cardCtrl.updateCard = (req,res) =>{
         .then(data => {
             if(!data){
                 res.status(404).send({
-                    msg: "Cannot update card with id: " + id + " maybe not found"
+                    msg: "No se pudo actualizar la carta con el ID " + id
                 });
             }else{
                 res.status(200).send({
@@ -117,7 +116,7 @@ cardCtrl.deleteCard = (req,res) => {
         .then(data => {
             if (!data) {
                 res.status(404).send({
-                    msg: "Cannot update card with id: " + id + " maybe not found"
+                    msg: "No se pudo borrar la carta con el ID " + id
                 });
             } else {
                 res.status(200).send({
@@ -194,7 +193,7 @@ cardCtrl.recoverCardDeleted = (req,res) => {
         .then(data => {
             if (!data) {
                 res.status(404).send({
-                    msg: "Cannot update card with id: " + id + " maybe not found"
+                    msg: "No se pudo recuperar la carta con el ID " + id
                 });
             } else {
                 res.status(200).send({
